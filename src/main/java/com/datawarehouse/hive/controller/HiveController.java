@@ -1,6 +1,8 @@
 package com.datawarehouse.hive.controller;
 
 
+import com.datawarehouse.hive.entity.Movie;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,4 +155,47 @@ public class HiveController {
             return null;
         }
     }
+
+    //查找电影
+    @RequestMapping("/select/movie")
+    public List queryMovie(@RequestParam(value = "name") String name, @RequestParam(value = "actorname") String actorName,
+                           @DateTimeFormat(pattern = "yyyy-MM-dd") Date start, @DateTimeFormat(pattern = "yyyy-MM-dd") Date end,
+                           @RequestParam(value = "catalog") String type, @RequestParam(value = "movieEx") boolean isEx){
+        try {
+            List<Movie> resultList = new ArrayList<Movie>();
+            Statement statement = druidDataSource.getConnection().createStatement();
+            String sql = "select * from movie where ";
+            if(!name.equals("null")){
+                if (isEx == true){
+                    sql = sql + "name=" + '%'+name+'%';
+                }else{
+                    sql = sql + "name=" + name;
+                }
+            }
+            if (!actorName.equals("null")){
+                sql = sql + " and mid in (select mid from acting where aid = " +
+                        "( select aid from actor where name = " + actorName + "))";
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sql = sql + " and rdate between"+sdf.format(start)+"and"+ sdf.format(end);
+            if(!type.equals(null)){
+                sql = sql + "and type =" + type;
+            }
+            sql = sql + ';';
+            ResultSet res = statement.executeQuery(sql);
+            while(res.next()){
+                Movie movie = new Movie();
+                movie.setmId(res.getString("mid"));
+                movie.setName(res.getString("name"));
+                movie.setrDate(res.getDate("rdate"));
+                movie.setType(res.getString("type"));
+                resultList.add(movie);
+            }
+            return resultList;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+
 }
