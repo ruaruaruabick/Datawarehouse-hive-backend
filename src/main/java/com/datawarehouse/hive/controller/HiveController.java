@@ -159,26 +159,26 @@ public class HiveController {
     //查找电影
     @RequestMapping("/select/movie")
     public List queryMovie(@RequestParam(value = "name") String name, @RequestParam(value = "actorname") String actorName,
-                           @DateTimeFormat(pattern = "yyyy-MM-dd") Date start, @DateTimeFormat(pattern = "yyyy-MM-dd") Date end,
-                           @RequestParam(value = "catalog") String type, @RequestParam(value = "movieEx") boolean isEx){
+                           @RequestParam(value = "start") String start, @RequestParam(value = "end") String end,
+                           @RequestParam(value = "catalog") String type){
         try {
             List<Movie> resultList = new ArrayList<Movie>();
             Statement statement = druidDataSource.getConnection().createStatement();
             String sql = "select * from movie where ";
-            if(!name.equals("null")){
-                if (isEx == true){
-                    sql = sql + "name=" + '%'+name+'%';
-                }else{
+            if(!name.equals("")){
                     sql = sql + "name=" + name;
-                }
             }
-            if (!actorName.equals("null")){
+            if (!actorName.equals("")){
                 sql = sql + " and mid in (select mid from acting where aid = " +
                         "( select aid from actor where name = " + actorName + "))";
             }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sql = sql + " and rdate between"+sdf.format(start)+"and"+ sdf.format(end);
-            if(!type.equals(null)){
+            if(!start.equals("")){
+                sql = sql + " and rdate > " + start;
+            }
+            if(!end.equals("")){
+                sql = sql + " and rdate < " + end;
+            }
+            if(!type.equals("")){
                 sql = sql + "and type =" + type;
             }
             sql = sql + ';';
