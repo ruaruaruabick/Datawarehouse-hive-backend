@@ -1,10 +1,8 @@
 package com.datawarehouse.hive.entity;
 
-import java.util.Date;
-
 public class CommentNum {
     private String mId;
-    private Date rDate;
+    private String rDate;
     private String type;
     private String name;
     private int num;
@@ -13,7 +11,7 @@ public class CommentNum {
         this.type = type;
     }
 
-    public void setrDate(Date rDate) {
+    public void setrDate(String rDate) {
         this.rDate = rDate;
     }
 
@@ -37,7 +35,7 @@ public class CommentNum {
         return mId;
     }
 
-    public Date getrDate() {
+    public String getrDate() {
         return rDate;
     }
 

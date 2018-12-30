@@ -1,10 +1,8 @@
 package com.datawarehouse.hive.entity;
 
-import java.sql.Date;
-
 public class Movie {
     private String name;
-    private Date rDate;
+    private String rDate;
     private String type;
     private String mId;
 
@@ -12,7 +10,7 @@ public class Movie {
         return name;
     }
 
-    public Date getrDate() {
+    public String getrDate() {
         return rDate;
     }
 
@@ -32,7 +30,7 @@ public class Movie {
         this.mId = mId;
     }
 
-    public void setrDate(Date rDate) {
+    public void setrDate(String rDate) {
         this.rDate = rDate;
     }
 
